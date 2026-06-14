@@ -1,44 +1,65 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package proyectofinalpoog3;
 
 /**
- *
- * @author Dueli
+ * Clase abstracta base para todos los tipos de producto del minimarket.
+ * Aplica: encapsulamiento, abstracción, herencia (clase padre).
  */
-public class Producto {
-    private int id;
+public abstract class Producto {
+    private String id;
     private String nombre;
     private double precio;
     private int stock;
-    private String categoria;
 
-    public Producto(int id, String nombre, double precio, int stock, String categoria) {
+    public Producto(String id, String nombre, double precio, int stock) {
         this.id = id;
         this.nombre = nombre;
         this.precio = precio;
         this.stock = stock;
-        this.categoria = categoria;
     }
-    
+
+    // ── Getters ──────────────────────────────────────────────
+    public String getId()      { return id; }
+    public String getNombre()  { return nombre; }
+    public double getPrecio()  { return precio; }
+    public int    getStock()   { return stock; }
+
+    // ── Setters ──────────────────────────────────────────────
+    public void setNombre(String nombre)  { this.nombre = nombre; }
+    public void setPrecio(double precio)  { this.precio = precio; }
+    public void setStock(int stock)       { this.stock = stock; }
+
+    /**
+     * Método abstracto: cada subclase devuelve sus detalles específicos.
+     * Aplica: polimorfismo + método abstracto.
+     */
+    public abstract String getDetallesEspecificos();
+
+    /**
+     * Reduce el stock al realizar una venta.
+     * @return true si había suficiente stock, false si no.
+     */
+    public boolean reducirStock(int cantidad) {
+        if (cantidad > stock) return false;
+        this.stock -= cantidad;
+        return true;
+    }
+
+    /**
+     * Muestra la información completa del producto.
+     * Aplica: polimorfismo — cada subclase muestra sus propios detalles.
+     */
     public void mostrarDatos() {
-    System.out.println("ID: " + id);
-    System.out.println("Nombre: " + nombre);
-    System.out.println("Precio: " + precio);
-    System.out.println("Stock: " + stock);
-    System.out.println("Categoria: " + categoria);
+        System.out.println("==============================");
+        System.out.println("ID       : " + id);
+        System.out.println("Nombre   : " + nombre);
+        System.out.printf ("Precio   : S/ %.2f%n", precio);
+        System.out.println("Stock    : " + stock + " unidades");
+        System.out.println("Detalles : " + getDetallesEspecificos());
+        System.out.println("==============================");
     }
-    
-    public void ActualizarStock(){
-        
+
+    @Override
+    public String toString() {
+        return String.format("[%s] %s - S/ %.2f (Stock: %d)", id, nombre, precio, stock);
     }
-    public void EditarProducto(){
-        
-    }
-    
-    
-    
-    
 }
