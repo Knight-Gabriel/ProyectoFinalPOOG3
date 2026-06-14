@@ -1,4 +1,4 @@
-package proyectofinal;
+package proyectofinalpoog3;
 import javax.swing.JOptionPane;
 
 public class FormularioGeneral extends javax.swing.JFrame {
