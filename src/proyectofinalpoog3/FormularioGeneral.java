@@ -8,6 +8,12 @@ public class FormularioGeneral extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormularioGeneral.class.getName());
     DefaultTableModel mt = new DefaultTableModel();
     DefaultTableModel nt = new DefaultTableModel();
+
+    // ── Backend del minimarket ────────────────────────────────
+    private GestionDeProductos gestion = new GestionDeProductos();
+    private java.util.ArrayList<Cliente> clientes = new java.util.ArrayList<>();
+    private ReportesDeVentas reportes = new ReportesDeVentas();
+    private Cliente clienteActual = null;
   
     public FormularioGeneral() {
         initComponents();
@@ -111,6 +117,7 @@ public class FormularioGeneral extends javax.swing.JFrame {
         jButton1.addActionListener(this::jButton1ActionPerformed);
 
         jButton2.setText("Salir");
+        jButton2.addActionListener(this::jButton2ActionPerformed);
 
         jLabel5.setText("ProductosElectronicos");
 
@@ -198,8 +205,10 @@ public class FormularioGeneral extends javax.swing.JFrame {
         jLabel10.setText("Accesorios");
 
         jButton3.setText("Registrar");
+        jButton3.addActionListener(this::jButton3ActionPerformed);
 
         jButton4.setText("Salir");
+        jButton4.addActionListener(this::jButton4ActionPerformed);
 
         jLabel28.setText("Nombre");
 
@@ -280,6 +289,7 @@ public class FormularioGeneral extends javax.swing.JFrame {
         jLabel17.setText("Menores18");
 
         jButton6.setText("Registrar");
+        jButton6.addActionListener(this::jButton6ActionPerformed);
 
         jLabel25.setText("Producto");
 
@@ -377,6 +387,7 @@ public class FormularioGeneral extends javax.swing.JFrame {
         jTextField14.addActionListener(this::jTextField14ActionPerformed);
 
         jButton7.setText("Registrar");
+        jButton7.addActionListener(this::jButton7ActionPerformed);
 
         jLabel23.setText("Producto");
 
@@ -489,6 +500,7 @@ public class FormularioGeneral extends javax.swing.JFrame {
         jLabel12.setText("Venta");
 
         jButton5.setText("Generar Boleta");
+        jButton5.addActionListener(this::jButton5ActionPerformed);
 
         jMenuBar1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
@@ -596,30 +608,189 @@ public class FormularioGeneral extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField14ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try{
-            String marca = jTextField1.getText();
-            String modelo = jTextField2.getText();
-            String color = jTextField3.getText();
-            String IDproducto = jTextField4.getText();
-        
-        
-            Empleado c = new Empleado();
-            c.setEdad(edad);
-            c.setNombre(nombre);
-            c.setHorasExtras(horasExtras);
-            c.setSueldo(sueldo);
-            double pago = c.calcularPagoHorasExtras();
-            mt.addRow(new Object[]{Nombre,edad,sueldo,horasExtras,pago});
-            jTextField1.setText("");
-            jTextField2.setText("");
-            jTextField3.setText("");
-            jTextField4.setText("");
-        }catch(NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error: "+e.getMessage());
-        }  
+        // Registrar Producto Electrónico
+        try {
+            String marca      = jTextField1.getText().trim();   // Marca
+            String modelo     = jTextField2.getText().trim();   // Modelo
+            String color      = jTextField3.getText().trim();   // Color
+            String id         = jTextField4.getText().trim();   // IDproducto
+            String nombre     = jTextField21.getText().trim();  // Nombre
+
+            if (marca.isEmpty() || modelo.isEmpty() || id.isEmpty() || nombre.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor completa todos los campos.");
+                return;
+            }
+
+            // Crear producto electrónico y agregarlo al inventario
+            proyectofinalpoog3.Productos.ProductoElectronico pe =
+                new proyectofinalpoog3.Productos.ProductoElectronico(
+                    id, nombre, 0.0, 10, 12, marca);
+            gestion.agregarProducto(pe);
+
+            // Mostrar en la tabla de Stock (columna Electrónicos)
+            mt.addRow(new Object[]{ nombre + " (" + marca + " " + modelo + ")", "" });
+
+            // Limpiar campos
+            jTextField1.setText(""); jTextField2.setText("");
+            jTextField3.setText(""); jTextField4.setText("");
+            jTextField21.setText("");
+
+            JOptionPane.showMessageDialog(null, "✔ Electrónico registrado: " + nombre);
+            jDialog1.setVisible(false);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    
+    // ── jButton2: Salir del diálogo Electrónicos ─────────────
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
+        jDialog1.setVisible(false);
+    }
+
+    // ── jButton3: Registrar Accesorio ────────────────────────
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            String marca    = jTextField5.getText().trim();  // Marca
+            String modelo   = jTextField6.getText().trim();  // Modelo
+            String color    = jTextField7.getText().trim();  // Color
+            String id       = jTextField8.getText().trim();  // IDproducto
+            String nombre   = jTextField22.getText().trim(); // Nombre
+
+            if (marca.isEmpty() || id.isEmpty() || nombre.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Por favor completa todos los campos.");
+                return;
+            }
+
+            proyectofinalpoog3.Productos.ProductoAccesorio pa =
+                new proyectofinalpoog3.Productos.ProductoAccesorio(
+                    id, nombre, 0.0, 10, modelo, color);
+            gestion.agregarProducto(pa);
+
+            // Mostrar en la tabla de Stock (columna Accesorios)
+            mt.addRow(new Object[]{ "", nombre + " (" + color + ")" });
+
+            jTextField5.setText(""); jTextField6.setText("");
+            jTextField7.setText(""); jTextField8.setText("");
+            jTextField22.setText("");
+
+            JOptionPane.showMessageDialog(null, "✔ Accesorio registrado: " + nombre);
+            jDialog2.setVisible(false);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
+        }
+    }
+
+    // ── jButton4: Salir del diálogo Accesorios ───────────────
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {
+        jDialog2.setVisible(false);
+    }
+
+    // ── jButton6: Registrar Cliente Menor de 18 ──────────────
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            String nombre     = jTextField9.getText().trim();
+            int    edad       = Integer.parseInt(jTextField10.getText().trim());
+            String direccion  = jTextField11.getText().trim();
+            int    dni        = Integer.parseInt(jTextField12.getText().trim());
+            String producto   = jTextField19.getText().trim();
+            double precio     = Double.parseDouble(jTextField20.getText().trim());
+
+            if (edad >= 18) {
+                JOptionPane.showMessageDialog(null, "Este formulario es solo para menores de 18.");
+                return;
+            }
+
+            Cliente c = new Cliente(dni, nombre, edad, direccion);
+            clientes.add(c);
+            clienteActual = c;
+
+            // Agregar a tabla de Ventas
+            nt.addRow(new Object[]{ nombre, producto, String.format("S/ %.2f", precio) });
+
+            jTextField9.setText(""); jTextField10.setText("");
+            jTextField11.setText(""); jTextField12.setText("");
+            jTextField19.setText(""); jTextField20.setText("");
+
+            JOptionPane.showMessageDialog(null, "✔ Cliente registrado: " + nombre);
+            jDialog3.setVisible(false);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error en los datos: verifica DNI, edad y precio.");
+        }
+    }
+
+    // ── jButton7: Registrar Cliente Mayor de 18 ──────────────
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            String nombre    = jTextField13.getText().trim();
+            String apellido  = jTextField14.getText().trim();
+            int    dni       = Integer.parseInt(jTextField15.getText().trim());
+            int    edad      = Integer.parseInt(jTextField16.getText().trim());
+            String producto  = jTextField17.getText().trim();
+            double precio    = Double.parseDouble(jTextField18.getText().trim());
+
+            if (edad < 18) {
+                JOptionPane.showMessageDialog(null, "Este formulario es solo para mayores de 18.");
+                return;
+            }
+
+            Cliente c = new Cliente(dni, nombre + " " + apellido, edad, "");
+            clientes.add(c);
+            clienteActual = c;
+
+            // Agregar a tabla de Ventas
+            nt.addRow(new Object[]{ nombre + " " + apellido, producto, String.format("S/ %.2f", precio) });
+
+            jTextField13.setText(""); jTextField14.setText("");
+            jTextField15.setText(""); jTextField16.setText("");
+            jTextField17.setText(""); jTextField18.setText("");
+
+            JOptionPane.showMessageDialog(null, "✔ Cliente registrado: " + nombre + " " + apellido);
+            jDialog4.setVisible(false);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Error en los datos: verifica DNI, edad y precio.");
+        }
+    }
+
+    // ── jButton5: Generar Boleta ──────────────────────────────
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {
+        if (nt.getRowCount() == 0) {
+            JOptionPane.showMessageDialog(null, "No hay ventas registradas para generar boleta.");
+            return;
+        }
+
+        StringBuilder boleta = new StringBuilder();
+        boleta.append("========================================\n");
+        boleta.append("        MINIMARKET - BOLETA DE VENTA\n");
+        boleta.append("========================================\n");
+
+        double total = 0;
+        for (int i = 0; i < nt.getRowCount(); i++) {
+            String nombreCliente = String.valueOf(nt.getValueAt(i, 0));
+            String producto      = String.valueOf(nt.getValueAt(i, 1));
+            String precioStr     = String.valueOf(nt.getValueAt(i, 2));
+            boleta.append(String.format("Cliente : %s%n", nombreCliente));
+            boleta.append(String.format("Producto: %s%n", producto));
+            boleta.append(String.format("Precio  : %s%n", precioStr));
+            boleta.append("----------------------------------------\n");
+
+            // Extraer el número del precio para sumar
+            try {
+                double precio = Double.parseDouble(precioStr.replace("S/ ", ""));
+                total += precio;
+            } catch (NumberFormatException ignored) {}
+        }
+
+        boleta.append(String.format("TOTAL   : S/ %.2f%n", total));
+        boleta.append("========================================\n");
+
+        JOptionPane.showMessageDialog(null, boleta.toString(),
+                "Boleta de Venta", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     public static void main(String args[]) {
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
