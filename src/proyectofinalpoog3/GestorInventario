@@ -1,0 +1,24 @@
+final class GestorInventario {
+    private final List<EntidadNegocio> listaProductos = new ArrayList<>();
+    private final DefaultTableModel modeloTabla;
+
+    public GestorInventario(DefaultTableModel modeloTabla) {
+        this.modeloTabla = modeloTabla;
+        cargarDatosIniciales();
+    }
+
+    private void cargarDatosIniciales() {
+        adicionarProducto(new EntidadNegocio("P001", "Laptop Core i7", 1200.0, 15));
+        adicionarProducto(new EntidadNegocio("P002", "Monitor Gamer 27'", 350.0, 22));
+        adicionarProducto(new EntidadNegocio("P003", "Teclado Mecánico", 85.0, 50));
+    }
+
+    public void adicionarProducto(EntidadNegocio prod) {
+        listaProductos.add(prod);
+        modeloTabla.addRow(new Object[]{prod.getId(), prod.getNombre(), prod.getValor(), prod.getStock()});
+    }
+
+    public List<EntidadNegocio> obtenerProductos() {
+        return listaProductos;
+    }
+}
