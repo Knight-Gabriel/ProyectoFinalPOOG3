@@ -27,7 +27,7 @@ public class FormularioGeneral extends javax.swing.JFrame {
     }
 
     @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jDialog1 = new javax.swing.JDialog();
@@ -579,45 +579,45 @@ public class FormularioGeneral extends javax.swing.JFrame {
         );
 
         pack();
-    }// </editor-fold>                        
+    }// </editor-fold>//GEN-END:initComponents
     
     
     
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
         // TODO add your handling code here:
         jDialog2.pack(); // ajusta al tamaño de los componentes
         jDialog2.setLocationRelativeTo(this);
         jDialog2.setModal(true);
         jDialog2.setVisible(true);
-    }                                          
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
         jDialog1.pack(); // ajusta al tamaño de los componentes
         jDialog1.setLocationRelativeTo(this);
         jDialog1.setModal(true);
         jDialog1.setVisible(true);
-    }                                          
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
-    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
         jDialog3.pack(); // ajusta al tamaño de los componentes
         jDialog3.setLocationRelativeTo(this);
         jDialog3.setModal(true);
         jDialog3.setVisible(true);
-    }                                          
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
-    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {                                           
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
         jDialog4.pack(); // ajusta al tamaño de los componentes
         jDialog4.setLocationRelativeTo(this);
         jDialog4.setModal(true);
         jDialog4.setVisible(true);
-    }                                          
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
 
-    private void jTextField14ActionPerformed(java.awt.event.ActionEvent evt) {                                             
+    private void jTextField14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField14ActionPerformed
         // TODO add your handling code here:
-    }                                            
+    }//GEN-LAST:event_jTextField14ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // Registrar Producto Electrónico
         try {
             String marca      = jTextField1.getText().trim();   // Marca
@@ -651,15 +651,15 @@ public class FormularioGeneral extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
         }
-    }                                        
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     // ── jButton2: Salir del diálogo Electrónicos ─────────────
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         jDialog1.setVisible(false);
-    }                                        
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     // ── jButton3: Registrar Accesorio ────────────────────────
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         try {
             String marca    = jTextField5.getText().trim();  // Marca
             String modelo   = jTextField6.getText().trim();  // Modelo
@@ -690,15 +690,15 @@ public class FormularioGeneral extends javax.swing.JFrame {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error: " + e.getMessage());
         }
-    }                                        
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     // ── jButton4: Salir del diálogo Accesorios ───────────────
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         jDialog2.setVisible(false);
-    }                                        
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     // ── jButton6: Registrar Cliente Menor de 18 ──────────────
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         try {
             String nombre     = jTextField9.getText().trim();
             int    edad       = Integer.parseInt(jTextField10.getText().trim());
@@ -729,11 +729,11 @@ public class FormularioGeneral extends javax.swing.JFrame {
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Error en los datos: verifica DNI, edad y precio.");
         }
-    }                                        
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     
     // ── jButton7: Registrar Cliente Mayor de 18 ──────────────
-    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         try {
     // 1. Lee los campos de texto tal como aparecen en tu interfaz
             String nombre   = jTextField13.getText().trim(); // Campo Nombre
@@ -769,11 +769,11 @@ public class FormularioGeneral extends javax.swing.JFrame {
         JOptionPane.showMessageDialog(null, "Error en los datos: verifica DNI, edad y precio.");
         }
 
-    }                                        
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     
     // ── jButton5: Generar Boleta ──────────────────────────────
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         if (nt.getRowCount() == 0) {
             JOptionPane.showMessageDialog(null, "No hay ventas registradas para generar boleta.");
             return;
@@ -806,7 +806,7 @@ public class FormularioGeneral extends javax.swing.JFrame {
 
         JOptionPane.showMessageDialog(null, boleta.toString(),
                 "Boleta de Venta", JOptionPane.INFORMATION_MESSAGE);
-    }                                        
+    }//GEN-LAST:event_jButton5ActionPerformed
 
 
     public static void main(String args[]) {
@@ -828,7 +828,7 @@ public class FormularioGeneral extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new FormularioGeneral().setVisible(true));
     }
 
-    // Variables declaration - do not modify                     
+    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -901,5 +901,5 @@ public class FormularioGeneral extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField7;
     private javax.swing.JTextField jTextField8;
     private javax.swing.JTextField jTextField9;
-    // End of variables declaration                   
+    // End of variables declaration//GEN-END:variables
 }
