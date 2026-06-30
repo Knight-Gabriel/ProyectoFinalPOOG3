@@ -15,7 +15,7 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(FormularioGeneralUpdate.class.getName());
 
-// ── Backend ──────────────────────────────────────────────
+    // ── Backend ──────────────────────────────────────────────
     private GestionDeProductos gestion = new GestionDeProductos();
     private java.util.ArrayList<Cliente> clientes = new java.util.ArrayList<>();
     private ReportesDeVentas reportes = new ReportesDeVentas();
@@ -28,9 +28,10 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
     public FormularioGeneralUpdate() {
         initComponents();
         modeloCarrito = (javax.swing.table.DefaultTableModel) tablaCarrito.getModel();
-        //configurarSeleccionTabla();
-        //actualizarTablaInventario();
-        //actualizarComboProductos();
+        modeloCarrito.setRowCount(0);  // ← AGREGA ESTA LÍNEA: limpia filas fantasma
+        configurarSeleccionTabla();
+        actualizarTablaInventario();
+        actualizarComboProductos();
     }
 
     /**
@@ -377,7 +378,7 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jTabbedPane2.addTab("Gestión de Iventario", jPanel1);
+        jTabbedPane2.addTab("Gestión de Inventario", jPanel1);
 
         panelCliente.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
@@ -559,11 +560,10 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
                     .addGroup(panelCliente2Layout.createSequentialGroup()
                         .addGroup(panelCliente2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel24, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(panelCliente2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(lblCliEdad)
-                                .addComponent(lblCliNombre)
-                                .addComponent(lblCliDni)
-                                .addComponent(lblCliTelefono)))
+                            .addComponent(lblCliEdad)
+                            .addComponent(lblCliNombre)
+                            .addComponent(lblCliDni)
+                            .addComponent(lblCliTelefono))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(panelCliente2Layout.createSequentialGroup()
                         .addGroup(panelCliente2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -645,54 +645,407 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
     private void comboCategoriaRegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboCategoriaRegActionPerformed
-        // TODO add your handling code here:
+        // No necesita lógica aquí, se lee el valor al presionar "Registrar"
     }//GEN-LAST:event_comboCategoriaRegActionPerformed
 
     private void txtCliEdadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCliEdadActionPerformed
-        // TODO add your handling code here:
+        // No se usa
     }//GEN-LAST:event_txtCliEdadActionPerformed
 
     private void txtCliNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCliNombreActionPerformed
-        // TODO add your handling code here:
+        // No se usa
     }//GEN-LAST:event_txtCliNombreActionPerformed
 
     private void txtCliDniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCliDniActionPerformed
-        // TODO add your handling code here:
+        // No se usa
     }//GEN-LAST:event_txtCliDniActionPerformed
 
     private void txtCliTelefonoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCliTelefonoActionPerformed
-        // TODO add your handling code here:
+        // No se usa
     }//GEN-LAST:event_txtCliTelefonoActionPerformed
 
     private void txtCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadActionPerformed
-        // TODO add your handling code here:
+        // No se usa
     }//GEN-LAST:event_txtCantidadActionPerformed
 
     private void btnAgregarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarProductoActionPerformed
-        // TODO add your handling code here:
+        agregarProductoAlCarrito();
     }//GEN-LAST:event_btnAgregarProductoActionPerformed
 
     private void btnRegistrarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarClienteActionPerformed
-        // TODO add your handling code here:
+        registrarCliente();
     }//GEN-LAST:event_btnRegistrarClienteActionPerformed
 
     private void btnQuitarProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnQuitarProductoActionPerformed
-        // TODO add your handling code here:
+        int fila = tablaCarrito.getSelectedRow();
+        if (fila >= 0) {
+            // Devolver el stock al inventario antes de quitar la fila
+            String idProducto = String.valueOf(modeloCarrito.getValueAt(fila, 0));
+            int cantidad = Integer.parseInt(String.valueOf(modeloCarrito.getValueAt(fila, 2)));
+            Producto p = gestion.buscarPorId(idProducto);
+            if (p != null) {
+                p.setStock(p.getStock() + cantidad);
+            }
+            modeloCarrito.removeRow(fila);
+            actualizarTablaInventario();
+            actualizarComboProductos();
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Selecciona un producto del carrito primero.");
+        }
     }//GEN-LAST:event_btnQuitarProductoActionPerformed
 
     private void btnGenerarBoletaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerarBoletaActionPerformed
-        // TODO add your handling code here:
+        generarBoleta();
     }//GEN-LAST:event_btnGenerarBoletaActionPerformed
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
-        // TODO add your handling code here:
+        modificarProducto(txtModId.getText().trim());
     }//GEN-LAST:event_btnModificarActionPerformed
 
     private void btnRegistrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarActionPerformed
-        // TODO add your handling code here:
+        registrarProducto();
     }//GEN-LAST:event_btnRegistrarActionPerformed
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MÉTODOS DE LÓGICA DE NEGOCIO (escritos a mano, no tocados por el diseñador)
+    // ═══════════════════════════════════════════════════════════════════
+
+    /** Configura el listener de selección de la tabla de inventario. */
+    private void configurarSeleccionTabla() {
+        tablaInvetario.getSelectionModel().addListSelectionListener(ev -> {
+            if (ev.getValueIsAdjusting()) return;
+            int fila = tablaInvetario.getSelectedRow();
+            if (fila < 0) return;
+            txtModId.setText(String.valueOf(tablaInvetario.getValueAt(fila, 0)));
+            txtModNombre.setText(String.valueOf(tablaInvetario.getValueAt(fila, 1)));
+            textModPrecio.setText(String.valueOf(tablaInvetario.getValueAt(fila, 2)));
+        });
+    }
+
+    /** Registra un producto nuevo en el inventario. */
+    private void registrarProducto() {
+        String id     = txtRegId.getText().trim();
+        String nombre = txtRegNombre.getText().trim();
+        String marca  = txtRegMarca.getText().trim();
+        String modelo = txtRegModelo.getText().trim();
+        String color  = txtRegColor.getText().trim();
+        String precioTxt = txtRegPrecio.getText().trim();
+        String stockTxt  = txtRegStock.getText().trim();
+        String tipo   = (String) comboCategoriaReg.getSelectedItem();
+
+        if (id.isEmpty() || nombre.isEmpty() || precioTxt.isEmpty() || stockTxt.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "ID, Nombre, Precio y Stock son obligatorios.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        double precio;
+        int stock;
+        try {
+            precio = Double.parseDouble(precioTxt);
+            stock  = Integer.parseInt(stockTxt);
+        } catch (NumberFormatException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Precio y Stock deben ser números válidos.", "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (precio <= 0 || stock < 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Precio debe ser mayor a 0 y Stock no puede ser negativo.", "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Producto prod;
+        switch (tipo) {
+            case "Electrónico":
+                prod = new proyectofinalpoog3.Productos.ProductoElectronico(
+                    id, nombre, precio, stock, 12, marca);
+                break;
+            case "Accesorio":
+                prod = new proyectofinalpoog3.Productos.ProductoAccesorio(
+                    id, nombre, precio, stock, marca, color);
+                break;
+            default: // Alimento
+                prod = new proyectofinalpoog3.Productos.ProductoAlimento(
+                    id, nombre, precio, stock, "—", false);
+                break;
+        }
+
+        boolean agregado = gestion.agregarProducto(prod);
+
+        if (!agregado) {
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "❌ Ya existe un producto con el ID: " + id + "\nUsa un ID diferente.",
+            "ID duplicado",
+            javax.swing.JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+        actualizarTablaInventario();
+        actualizarComboProductos();
+
+        txtRegId.setText(""); txtRegNombre.setText(""); txtRegMarca.setText("");
+        txtRegModelo.setText(""); txtRegColor.setText("");
+        txtRegPrecio.setText(""); txtRegStock.setText("");
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "✔ Producto registrado: " + nombre, "Éxito",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /** Modifica el producto cuyo ID se pasa como parámetro. */
+    private void modificarProducto(String id) {
+        if (id.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Primero selecciona un producto en la tabla.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String nuevoNombre = txtModNombre.getText().trim();
+        String nuevoPrecioTxt = textModPrecio.getText().trim();
+
+        if (nuevoNombre.isEmpty() || nuevoPrecioTxt.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Nombre y Precio no pueden estar vacíos.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        double nuevoPrecio;
+        try {
+            nuevoPrecio = Double.parseDouble(nuevoPrecioTxt);
+        } catch (NumberFormatException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "El precio debe ser un número válido.", "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        gestion.editarProducto(id, nuevoNombre, nuevoPrecio);
+        actualizarTablaInventario();
+        actualizarComboProductos();
+
+        txtModNombre.setText(""); txtModMarca.setText("");
+        txtModModelo1.setText(""); txtModColor1.setText(""); textModPrecio.setText("");
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "✔ Producto actualizado.", "Éxito",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /** Recarga la tabla de inventario desde GestionDeProductos. */
+    private void actualizarTablaInventario() {
+        javax.swing.table.DefaultTableModel modelo =
+            (javax.swing.table.DefaultTableModel) tablaInvetario.getModel();
+        modelo.setRowCount(0);
+        for (Producto p : gestion.getInventario()) {
+            modelo.addRow(new Object[]{
+                p.getId(),
+                p.getNombre(),
+                String.format("%.2f", p.getPrecio()),
+                p.getStock(),
+                p.getClass().getSimpleName().replace("Producto", "")
+            });
+        }
+    }
+
+    /** Registra el cliente actual. */
+    private void registrarCliente() {
+        String nombre   = txtCliNombre.getText().trim();
+        String edadTxt  = txtCliEdad.getText().trim();
+        String dniTxt   = txtCliDni.getText().trim();
+        String telefono = txtCliTelefono.getText().trim();
+
+        if (nombre.isEmpty() || edadTxt.isEmpty() || dniTxt.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Nombre, Edad y DNI son obligatorios.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int edad, dni;
+        try {
+            edad = Integer.parseInt(edadTxt);
+            dni  = Integer.parseInt(dniTxt);
+        } catch (NumberFormatException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Edad y DNI deben ser números.", "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (edad < 18) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "El cliente debe ser mayor de 18 años.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        clienteActual = new Cliente(dni, nombre, edad, telefono);
+        clientes.add(clienteActual);
+
+        lblCliNombre.setText("Nombre cliente: " + clienteActual.getNombre());
+        lblCliEdad.setText("Edad: " + clienteActual.getEdad());
+        lblCliDni.setText("DNI: " + clienteActual.getDni());
+        lblCliTelefono.setText("Teléfono: " + clienteActual.getTelefono());
+
+        txtCliNombre.setText(""); txtCliEdad.setText("");
+        txtCliDni.setText(""); txtCliTelefono.setText("");
+
+        javax.swing.JOptionPane.showMessageDialog(this,
+            "✔ Cliente registrado: " + nombre, "Éxito",
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    /** Agrega el producto seleccionado en el combo al carrito. */
+    private void agregarProductoAlCarrito() {
+        if (clienteActual == null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Primero registra un cliente.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String seleccion = (String) comboProductos.getSelectedItem();
+        if (seleccion == null || seleccion.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "No hay productos en el inventario.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String idProducto = seleccion.split(" — ")[0].trim();
+        Producto prod = gestion.buscarPorId(idProducto);
+
+        if (prod == null) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Producto no encontrado.", "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int cantidad;
+        try {
+            cantidad = Integer.parseInt(txtCantidad.getText().trim());
+        } catch (NumberFormatException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "La cantidad debe ser un número.", "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        if (cantidad <= 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "La cantidad debe ser mayor a 0.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        if (prod.getStock() < cantidad) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Stock insuficiente. Disponible: " + prod.getStock(), "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        double subtotal = prod.getPrecio() * cantidad;
+        prod.reducirStock(cantidad);
+
+        modeloCarrito.addRow(new Object[]{
+            prod.getId(),
+            prod.getNombre(),
+            cantidad,
+            String.format("%.2f", prod.getPrecio()),
+            String.format("%.2f", subtotal)
+        });
+
+        actualizarTablaInventario();
+        txtCantidad.setText("1");
+    }
+
+    /** Genera la boleta de venta con todos los productos del carrito. */
+    private void generarBoleta() {
+        if (clienteActual == null) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "Registra un cliente primero.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        if (modeloCarrito.getRowCount() == 0) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "El carrito está vacío.", "Aviso",
+                javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("════════════════════════════════════════\n");
+        sb.append("        MINIMARKET — BOLETA DE VENTA    \n");
+        sb.append("════════════════════════════════════════\n");
+        sb.append(String.format("Cliente : %s%n", clienteActual.getNombre()));
+        sb.append(String.format("DNI     : %d%n", clienteActual.getDni()));
+        sb.append(String.format("Tel     : %s%n", clienteActual.getTelefono()));
+        sb.append("────────────────────────────────────────\n");
+        sb.append(String.format("%-20s %5s %10s%n", "Producto", "Cant.", "Subtotal"));
+        sb.append("────────────────────────────────────────\n");
+
+        double total = 0;
+        for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+            String nombre   = String.valueOf(modeloCarrito.getValueAt(i, 1));
+            int    cantidad = Integer.parseInt(String.valueOf(modeloCarrito.getValueAt(i, 2)));
+            double subtotal = Double.parseDouble(
+                String.valueOf(modeloCarrito.getValueAt(i, 4)));
+            sb.append(String.format("%-20s %5d   S/ %6.2f%n", nombre, cantidad, subtotal));
+            total += subtotal;
+        }
+
+        sb.append("────────────────────────────────────────\n");
+        sb.append(String.format("TOTAL           :      S/ %6.2f%n", total));
+        sb.append("════════════════════════════════════════\n");
+
+        CompraDeProductos compra = new CompraDeProductos(clienteActual);
+        for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+            String idProd = String.valueOf(modeloCarrito.getValueAt(i, 0));
+            Producto p = gestion.buscarPorId(idProd);
+            if (p != null) {
+                int cant = Integer.parseInt(String.valueOf(modeloCarrito.getValueAt(i, 2)));
+                compra.getLineas().add(new CompraDeProductos.LineaDeCompra(p, cant));
+            }
+        }
+        reportes.registrarVenta(compra);
+
+        javax.swing.JTextArea areaTexto = new javax.swing.JTextArea(sb.toString());
+        areaTexto.setEditable(false);
+        areaTexto.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 13));
+        javax.swing.JScrollPane scrollBoleta = new javax.swing.JScrollPane(areaTexto);
+        scrollBoleta.setPreferredSize(new java.awt.Dimension(440, 320));
+
+        javax.swing.JOptionPane.showMessageDialog(this, scrollBoleta,
+            "Boleta de Venta #" + compra.getIdCompra(),
+            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+
+        modeloCarrito.setRowCount(0);
+        clienteActual = null;
+        lblCliNombre.setText("Nombre cliente: ---");
+        lblCliEdad.setText("Edad: ---");
+        lblCliDni.setText("DNI: ---");
+        lblCliTelefono.setText("Teléfono: ---");
+    }
+
+    /** Actualiza el JComboBox de productos con el inventario actual. */
+    private void actualizarComboProductos() {
+        comboProductos.removeAllItems();
+        for (Producto p : gestion.getInventario()) {
+            comboProductos.addItem(String.format("%s — %s (S/ %.2f)",
+                p.getId(), p.getNombre(), p.getPrecio()));
+        }
+    }
 
     /**
      * @param args the command line arguments

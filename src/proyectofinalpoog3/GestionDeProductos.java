@@ -20,15 +20,16 @@ public class GestionDeProductos {
     /**
      * Agrega un nuevo producto al inventario.
      */
-    public void agregarProducto(Producto producto) {
+    public boolean  agregarProducto(Producto producto) {
         for (Producto p : inventario) {
             if (p.getId().equals(producto.getId())) {
                 System.out.println("⚠ Ya existe un producto con ID: " + producto.getId());
-                return;
+                return false;
             }
         }
         inventario.add(producto);
         System.out.println("✔ Producto agregado: " + producto.getNombre());
+        return true;
     }
 
     /**
