@@ -30,6 +30,7 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
         modeloCarrito = (javax.swing.table.DefaultTableModel) tablaCarrito.getModel();
         modeloCarrito.setRowCount(0);  // ← AGREGA ESTA LÍNEA: limpia filas fantasma
         configurarSeleccionTabla();
+        cargarProductosDesdeBD();
         actualizarTablaInventario();
         actualizarComboProductos();
     }
@@ -779,6 +780,14 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
 
         boolean agregado = gestion.agregarProducto(prod);
 
+        if (agregado) {
+            String detalles = String.format("Marca: %s | Modelo: %s | Color: %s", marca, modelo, color);
+            String tipoDB = tipo.equals("Electrónico") ? "ELECTRONICO"
+                           : tipo.equals("Accesorio")   ? "ACCESORIO"
+                           : "ALIMENTO";
+            ConexionBD.insertarProducto(id, nombre, precio, stock, tipoDB, detalles);
+        }
+
         if (!agregado) {
         javax.swing.JOptionPane.showMessageDialog(this,
             "❌ Ya existe un producto con el ID: " + id + "\nUsa un ID diferente.",
@@ -855,6 +864,35 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
             });
         }
     }
+    
+    /** Carga los productos guardados en la BD hacia el inventario en memoria. */
+    private void cargarProductosDesdeBD() {
+        java.util.ArrayList<Object[]> productosDB = ConexionBD.obtenerProductos();
+        for (Object[] fila : productosDB) {
+            String id     = (String) fila[0];
+            String nombre = (String) fila[1];
+            double precio = (double) fila[2];
+            int stock     = (int) fila[3];
+            String tipo   = (String) fila[4];
+
+            Producto prod;
+            switch (tipo) {
+                case "ELECTRONICO":
+                    prod = new proyectofinalpoog3.Productos.ProductoElectronico(
+                        id, nombre, precio, stock, 12, "—");
+                    break;
+                case "ACCESORIO":
+                    prod = new proyectofinalpoog3.Productos.ProductoAccesorio(
+                        id, nombre, precio, stock, "—", "—");
+                    break;
+                default:
+                    prod = new proyectofinalpoog3.Productos.ProductoAlimento(
+                        id, nombre, precio, stock, "—", false);
+                    break;
+            }
+            gestion.agregarProducto(prod);
+        }
+    }
 
     /** Registra el cliente actual. */
     private void registrarCliente() {
@@ -888,8 +926,30 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
             return;
         }
 
-        clienteActual = new Cliente(dni, nombre, edad, telefono);
-        clientes.add(clienteActual);
+        // Buscar si el cliente ya existe en la BD
+        Object[] clienteExistente = ConexionBD.buscarClientePorDni(dni);
+
+        if (clienteExistente != null) {
+            // Ya existe: lo reutilizamos en vez de crear uno nuevo
+            String nombreGuardado = (String) clienteExistente[1];
+            int edadGuardada       = (int) clienteExistente[2];
+            String telefonoGuardado = (String) clienteExistente[3];
+
+            clienteActual = new Cliente(dni, nombreGuardado, edadGuardada, telefonoGuardado);
+
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "👋 Bienvenido de nuevo, " + nombreGuardado,
+                "Cliente reconocido",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            clienteActual = new Cliente(dni, nombre, edad, telefono);
+            clientes.add(clienteActual);
+            ConexionBD.insertarCliente(dni, nombre, edad, telefono);
+
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "✔ Cliente nuevo registrado: " + nombre, "Éxito",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        }
 
         lblCliNombre.setText("Nombre cliente: " + clienteActual.getNombre());
         lblCliEdad.setText("Edad: " + clienteActual.getEdad());
@@ -898,10 +958,6 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
 
         txtCliNombre.setText(""); txtCliEdad.setText("");
         txtCliDni.setText(""); txtCliTelefono.setText("");
-
-        javax.swing.JOptionPane.showMessageDialog(this,
-            "✔ Cliente registrado: " + nombre, "Éxito",
-            javax.swing.JOptionPane.INFORMATION_MESSAGE);
     }
 
     /** Agrega el producto seleccionado en el combo al carrito. */
@@ -1019,16 +1075,51 @@ public class FormularioGeneralUpdate extends javax.swing.JFrame {
             }
         }
         reportes.registrarVenta(compra);
+        
+        
+        
+        // ── Guardar la compra en la base de datos ──────────────────────────
+        int idCompraDB = ConexionBD.insertarCompra(clienteActual.getDni(), total);
+        if (idCompraDB > 0) {
+            for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+                String idProd = String.valueOf(modeloCarrito.getValueAt(i, 0));
+                int cant = Integer.parseInt(String.valueOf(modeloCarrito.getValueAt(i, 2)));
+                double precioUnit = Double.parseDouble(String.valueOf(modeloCarrito.getValueAt(i, 3)));
+                ConexionBD.insertarLineaCompra(idCompraDB, idProd, cant, precioUnit);
+            }
+            ConexionBD.incrementarComprasCliente(clienteActual.getDni());
+        }
 
-        javax.swing.JTextArea areaTexto = new javax.swing.JTextArea(sb.toString());
-        areaTexto.setEditable(false);
-        areaTexto.setFont(new java.awt.Font(java.awt.Font.MONOSPACED, java.awt.Font.PLAIN, 13));
-        javax.swing.JScrollPane scrollBoleta = new javax.swing.JScrollPane(areaTexto);
-        scrollBoleta.setPreferredSize(new java.awt.Dimension(440, 320));
+        // ── Armar las líneas para el PDF ────────────────────────────────────
+        String[][] lineasPDF = new String[modeloCarrito.getRowCount()][4];
+        for (int i = 0; i < modeloCarrito.getRowCount(); i++) {
+            String nombreProd = String.valueOf(modeloCarrito.getValueAt(i, 1));
+            String cant = String.valueOf(modeloCarrito.getValueAt(i, 2));
+            String precioUnit = String.valueOf(modeloCarrito.getValueAt(i, 3));
+            String subtotal = String.valueOf(modeloCarrito.getValueAt(i, 4));
+            lineasPDF[i] = new String[]{nombreProd, cant, precioUnit, subtotal};
+        }
 
-        javax.swing.JOptionPane.showMessageDialog(this, scrollBoleta,
-            "Boleta de Venta #" + compra.getIdCompra(),
-            javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        String rutaPDF = proyectofinalpoog3.util.GeneradorPDF.generarBoleta(
+            idCompraDB > 0 ? idCompraDB : compra.getIdCompra(),
+            clienteActual.getNombre(),
+            clienteActual.getDni(),
+            lineasPDF,
+            total
+        );
+
+        if (rutaPDF != null) {
+            proyectofinalpoog3.util.GeneradorPDF.abrirBoleta(rutaPDF);
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "✔ Boleta generada exitosamente\n\nArchivo: " + rutaPDF,
+                "Boleta de Venta",
+                javax.swing.JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                "❌ Hubo un error al generar el PDF.",
+                "Error",
+                javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
 
         modeloCarrito.setRowCount(0);
         clienteActual = null;
